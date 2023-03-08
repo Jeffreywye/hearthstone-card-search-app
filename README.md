@@ -1,3 +1,3 @@
 # Hearthstone Card Search APP
 
-(Diagram.png)
+![ERD](images/Diagram.png)
