@@ -1,4 +1,5 @@
 import re
+from ScrapeEffects import getEffects
 
 def findEffect(text, store):
     # print(text)
@@ -16,7 +17,7 @@ def findEffect(text, store):
     # print()
 
 def main():
-    effectDic = set()
+    effectDic = getEffects()
     with open("hearthstone.csv", encoding="utf8") as file:
         count = 0
         # print(file.readline().strip().split(","))
@@ -24,14 +25,13 @@ def main():
             card = line.strip().split(",")
             if (card[4] == "Minion") or (card[4] == "Spell"):
                 count += 1
-                # print(card[5])
+                # card had text
                 if card[5]:
-                    findEffect(card[5].strip(),effectDic)
+                    pass
 
-        # print(count)
+        print(count)
         for effect in effectDic:
             print(effect)
-        print(len(effectDic))
 
 if __name__ == '__main__':
     main()
