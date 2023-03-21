@@ -16,6 +16,23 @@ def findEffect(text, store):
             store.add(clean)
     # print()
 
+def cleanData(effectDic):
+    data = {}
+    with open("hearthstone.csv", encoding="utf8") as file:
+        file.readline()
+        for line in file:
+            card = line.strip().split(",")
+            if (card[4] == "Minion") or (card[4] == "Spell"):
+                pass
+
+                # card has text
+                if card[5]:
+                    pass 
+
+def createRow():
+    row = {}
+    return row
+
 def main():
     effectDic = getEffects()
     with open("hearthstone.csv", encoding="utf8") as file:
