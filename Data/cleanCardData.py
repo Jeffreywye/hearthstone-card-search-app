@@ -1,12 +1,14 @@
 import re
 from ScrapeEffects import getEffects, getClasses
+from os import path
 
 def cleanData(effectDic):
     data = {}
     cards = []
     classes = getClasses()
     sets = {}
-    with open("hearthstone.csv", encoding="utf8") as file:
+    basedir = path.abspath(path.dirname(__file__))
+    with open(path.join(basedir, "hearthstone.csv") , encoding="utf8") as file:
         cols = file.readline().split(',')
         # for n, col in enumerate(cols):
         #     print(str(n)+" "+col)
@@ -106,7 +108,6 @@ def main():
     # printDicByLine(ret["classes"])
     # printDicByLine(ret["sets"])
     # printDicByLine(ret["effects"])
-
 
 if __name__ == '__main__':
     main()
