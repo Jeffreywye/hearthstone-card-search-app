@@ -1,3 +1,7 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
 /venv
 /data/hearthstone.csv
 /data/__pycache__
