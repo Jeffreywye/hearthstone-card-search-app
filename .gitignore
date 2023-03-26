@@ -6,4 +6,5 @@ __pycache__/
 /venv
 /data/hearthstone.csv
 /data/__pycache__
+/Models/__pycache__
 .env
