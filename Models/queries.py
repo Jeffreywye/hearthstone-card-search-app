@@ -1,4 +1,4 @@
-from models import card
+from .models import card
 
 class Queries:
     def __init__(self, db):

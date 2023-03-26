@@ -26,7 +26,7 @@ def cleanData(effectDic):
                 
                 # index of first text occurence
                 i = 5
-                # card has text
+                # card has text, must account for commas in text
                 if csvRow[i]:
                     fullText = ""
 
@@ -71,8 +71,9 @@ def cleanData(effectDic):
                     card["class"].append(csvRow[i])
                 
                 card["rarity"] = csvRow[i+2]
-                
                 card["health"] = int(float(csvRow[i+3])) if  csvRow[i+3] else None
+                
+                # account for commas in mechanic col
                 cur = i+4
                 while True:
                     cur += 1
@@ -105,6 +106,13 @@ def printDicByLine(dic):
 def main():
     effectDic = getEffects()
     ret = cleanData(effectDic)
+    # m = 0
+    # for card in ret["cards"]:
+    #     # print(card)
+    #     if card['text']:
+    #         m = max(m,len(card['text']))
+    # print(m)
+    # print(max([len(card['id']) for card in ret["cards"] ] ))
     # printDicByLine(ret["classes"])
     # printDicByLine(ret["sets"])
     # printDicByLine(ret["effects"])
