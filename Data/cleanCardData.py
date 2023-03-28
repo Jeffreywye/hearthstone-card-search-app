@@ -101,7 +101,7 @@ def printDicByLine(dic):
     for key in dic:
         print("{} {}".format(key, dic[key]))
     print(len(dic))
-    print()
+    print(max( [len(name) for name in dic.keys()] ))
 
 def main():
     effectDic = getEffects()
@@ -114,8 +114,8 @@ def main():
     # print(m)
     # print(max([len(card['id']) for card in ret["cards"] ] ))
     # printDicByLine(ret["classes"])
-    # printDicByLine(ret["sets"])
-    # printDicByLine(ret["effects"])
+    printDicByLine(ret["sets"])
+    printDicByLine(ret["effects"])
 
 if __name__ == '__main__':
     main()
