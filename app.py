@@ -1,5 +1,5 @@
 from flask import Flask
-from Models.models import db, card
+from Models.models import db, Card
 from Models.queries import Queries
 from config import conn
 from sqlalchemy import create_engine
@@ -16,8 +16,8 @@ def test():
         print("DB must be init")
         engine = create_engine(conn)
         create_database(engine.url)
-        # with app.app_context():
-        #     db.create_all()
+        with app.app_context():
+            db.create_all()
 
 @app.route('/')
 def base():
