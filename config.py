@@ -19,5 +19,5 @@ dbName = environ.get('DBNAME')
 conn = "postgresql://{0}:{1}@{2}/{3}".format(user, password, host, dbName)
 
 SQLALCHEMY_DATABASE_URI = conn
-SQLALCHEMY_ECHO = True
+SQLALCHEMY_ECHO = False
 SQLALCHEMY_TRACK_MODIFICATIONS = False
