@@ -5,8 +5,75 @@ class Queries:
         self._db = db
 
     def addCard(self, dic):
-        pass
+        try:
+            card = Card.query.get(dic['id'])
+            if card:
+                return False, "{} with id {} already in Cards".format(dic['name'], dic['id'])
+            card = Card(id = dic['id'],
+                        name = dic['name'],
+                        card_type = dic['type'],
+                        text = dic['text'],
+                        rarity = dic['rarity'],
+                        mana = dic['mana'],
+                        health = dic['health'],
+                        attack = dic['attack']
+            )
+            setObj = Set_.query.filter_by(name=dic['set']).first()
+            setObj.cards.append(card)
+            # card.set_ = [setObj]
+
+            if dic['effect']:
+                for effect in dic['effect']:
+                    effectObj = Effect.query.filter_by(name=effect).first()
+                    card.effects.append(effectObj)
+            
+            if dic['class']:
+                for clss in dic['class']:
+                    classObj = Class_.query.filter_by(name=clss).first()
+                    card.classes.append(classObj)
+
+            return True, "Added Card with ID {} into Cards".format(dic['id']) if self.addAndCommitToDB(card) else (False, "Error Committing Card with ID {} into Cards".format(dic['id']))
+        except Exception as e:
+            return False, "Error adding card {} with id {} into Cards with Error {}".format(dic['name'], dic['id'], e)
     
+    def getAllCards(self):
+        ret = []
+        for card in Card.query.all():
+            ret.append(self.convertCardObjToDic(card))
+        return ret
+
+    def convertCardObjToDic(self, sqlObj):
+        ret = {
+            "id" : sqlObj.id,
+            "name" : sqlObj.name,
+            "type" : sqlObj.card_type,
+            "text" : sqlObj.text,
+            "rarity" : sqlObj.rarity,
+            "mana" : sqlObj.mana,
+            "attack" : sqlObj.attack,
+            "health" : sqlObj.health
+        }
+        ret['set'] = Set_.query.get(sqlObj.setID).name
+        ret['effect'] = []
+        ret['class'] = []
+        for clss in sqlObj.classes:
+            ret['class'].append(clss.name)
+        for effect in sqlObj.effects:
+            ret['effect'].append(effect.name)
+        print(ret)
+        return ret
+
+    def deleteCardByID(self, id):
+        try:
+            card = Card.query.get(id)
+            if not card:
+                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+            self._db.session.delete(card)
+            self._db.session.commit()
+            return True, "Delete Card with ID: {} from Cards".format(id)
+        except Exception as e:
+            return False, "Error deleting Card with ID: {} from Cards with Error: {}".format(id, e)
+
     def addToMinorTable(self, tableClass, val):
         try:
             sql_obj = tableClass.query.filter_by(name=val).first()

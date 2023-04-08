@@ -14,11 +14,11 @@ Card_effect = db.Table('CardEffect',
 class Card(db.Model):
     __tablename__ = "Cards"
     id = db.Column(db.String(50), primary_key = True)
-    name = db.Column(db.String(40))
-    card_type = db.Column(db.String(20))
+    name = db.Column(db.String(40), nullable=False)
+    card_type = db.Column(db.String(20), nullable=False)
     text = db.Column(db.String(300))
-    rarity = db.Column(db.String(10))
-    mana = db.Column(db.Integer)
+    rarity = db.Column(db.String(10), nullable=False)
+    mana = db.Column(db.Integer, nullable=False)
     health = db.Column(db.Integer)
     attack = db.Column(db.Integer)
     classes = db.relationship("Class_",
@@ -31,9 +31,7 @@ class Card(db.Model):
         back_populates = "cards",
         lazy = 'dynamic'
     )
-    setID = db.Column(db.Integer, db.ForeignKey('Sets.id'))
-    set_ = db.relationship('Set_',
-        back_populates = "cards")
+    setID = db.Column(db.Integer, db.ForeignKey('Sets.id'), nullable=False)
 
 # when a class is deleted, delete cards associated to that class
 class Class_(db.Model):
@@ -63,7 +61,6 @@ class Set_(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     name = db.Column(db.String(50))
     cards = db.relationship("Card",
-        back_populates = 'set_',
         cascade = 'all, delete-orphan',
         lazy = 'dynamic' )
 

@@ -107,15 +107,21 @@ def main():
     effectDic = getEffects()
     ret = cleanData(effectDic)
     # m = 0
-    # for card in ret["cards"]:
-    #     # print(card)
-    #     if card['text']:
-    #         m = max(m,len(card['text']))
+    for card in ret["cards"]:
+        if len(card['class'])>1:
+            print(card)
+        # if card['text']:
+        #     m = max(m,len(card['text']))
+        # else:
+        #     # print(card)
+        #     if card['text'] == "":
+        #         print(card)
+
     # print(m)
     # print(max([len(card['id']) for card in ret["cards"] ] ))
     # printDicByLine(ret["classes"])
-    printDicByLine(ret["sets"])
-    printDicByLine(ret["effects"])
+    # printDicByLine(ret["sets"])
+    # printDicByLine(ret["effects"])
 
 if __name__ == '__main__':
     main()
