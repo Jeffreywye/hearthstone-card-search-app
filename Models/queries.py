@@ -20,7 +20,6 @@ class Queries:
             )
             setObj = Set_.query.filter_by(name=dic['set']).first()
             setObj.cards.append(card)
-            # card.set_ = [setObj]
 
             if dic['effect']:
                 for effect in dic['effect']:
@@ -31,8 +30,8 @@ class Queries:
                 for clss in dic['class']:
                     classObj = Class_.query.filter_by(name=clss).first()
                     card.classes.append(classObj)
-
             return True, "Added Card with ID {} into Cards".format(dic['id']) if self.addAndCommitToDB(card) else (False, "Error Committing Card with ID {} into Cards".format(dic['id']))
+        
         except Exception as e:
             return False, "Error adding card {} with id {} into Cards with Error {}".format(dic['name'], dic['id'], e)
     
@@ -60,7 +59,6 @@ class Queries:
             ret['class'].append(clss.name)
         for effect in sqlObj.effects:
             ret['effect'].append(effect.name)
-        print(ret)
         return ret
 
     def deleteCardByID(self, id):
@@ -73,6 +71,40 @@ class Queries:
             return True, "Delete Card with ID: {} from Cards".format(id)
         except Exception as e:
             return False, "Error deleting Card with ID: {} from Cards with Error: {}".format(id, e)
+
+    def updateCardById(self, id, data):
+        try:
+            card = Card.query.get(id)
+            if not card:
+                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+            for key in data:
+                payload = data[key]
+                if key == "classes":
+                    temp = []
+                    for clss in data[key]:
+                        clssObj = Class_.query.filter_by(name = clss).first()
+                        temp.append(clssObj)
+                    payload = temp
+
+                elif key == "text":
+                    effects  =  Effect.query.all()
+                    effectPayload = []
+                    for effectObj in effects:
+                        if effectObj.name in data["text"]:
+                            effectPayload.append(effectObj)
+                    card.effects = effectPayload
+    
+                setattr(card,key,payload)
+            self._db.session.commit()
+
+        except Exception as e:
+            return False, "Error updating Card with ID {} from Cards with Error: {}".format(id, e)
+    
+    def appendClassToCardById(self, id, clss):
+        try:
+            pass
+        except Exception as e:
+            return False, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
 
     def addToMinorTable(self, tableClass, val):
         try:
