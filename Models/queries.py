@@ -1,4 +1,5 @@
 from .models import Card, Effect, Set_, Class_, Card_class, Card_effect
+from sqlalchemy import or_
 
 class Queries:
     def __init__(self, db):
@@ -40,6 +41,21 @@ class Queries:
         for card in Card.query.all():
             ret.append(self.convertCardObjToDic(card))
         return ret
+
+    def findCards(self, filters):
+        try:
+            curQuery = Card.query
+            for column in filters:
+                val = filters[column]
+                if (column is "classes") or (column is "effects") or (column is "setID"):
+                    continue
+                if column is "text":
+                    curQuery = curQuery.filter(or_(Card.name.contains(val), Card.text.contains(val)))
+                else:
+                    curQuery = curQuery.filter(getattr(Card,column) == val)
+            
+        except Exception as e:
+            return [], "Error finding cards with Error {}".format(e)
 
     def convertCardObjToDic(self, sqlObj):
         ret = {
@@ -96,13 +112,38 @@ class Queries:
     
                 setattr(card,key,payload)
             self._db.session.commit()
+            return True, "Updated Card with ID: {} with {}".format(id, data)
 
         except Exception as e:
             return False, "Error updating Card with ID {} from Cards with Error: {}".format(id, e)
     
     def appendClassToCardById(self, id, clss):
         try:
-            pass
+            card = Card.query.get(id)
+            if not card:
+                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+            clssObj = Class_.query.filter_by(name = clss).first()
+            if not clssObj:
+                return False, "Class: {} does not exist".format(clss)
+            card.classes.append(clssObj)
+            self._db.session.commit()
+            return True, "Added class {} to Card with ID: {}".format(clss, id)
+
+        except Exception as e:
+            return False, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
+
+    def removeClassFromCardById(self, id, clss):
+        try:
+            card = Card.query.get(id)
+            if not card:
+                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+            clssObj = Class_.query.filter_by(name = clss).first()
+            if not clssObj:
+                return False, "Class: {} does not exist".format(clss)
+            card.classes.remove(clssObj)
+            self._db.session.commit()
+            return True, "Removed class {} from Card with ID: {}".format(clss, id)
+
         except Exception as e:
             return False, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
 
