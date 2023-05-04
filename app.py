@@ -151,7 +151,6 @@ def test():
         filters = {
             
             "effects" : [],
-            "classes" : []
         }
         temp = queries_obj.findCards(filters)
         if temp[0]:
