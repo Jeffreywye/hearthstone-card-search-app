@@ -216,14 +216,14 @@ class Queries:
             return False, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
 
     def addToMinorTable(self, tableClass, val):
-        
+        try:
             sql_obj = tableClass.query.filter_by(name=val).first()
             if sql_obj:
                 return False, "{} already exists in {}".format(val, tableClass.__tablename__)
             sql_obj = tableClass(name = val)
             return True, "{} Added into {}".format(val, tableClass.__tablename__) if self.addAndCommitToDB(sql_obj) else False, "Error Committing {} into {}".format(val, tableClass.__tablename__)
-        
-            return False, "Error adding {} into {}".format(val, tableClass.__tablename__)
+        except Exception as e:
+            return False, "Error adding {} into {} with Error {}".format(val, tableClass.__tablename__, e)
 
     def addAndCommitToDB(self, sqlobj):
         try:
