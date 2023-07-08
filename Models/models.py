@@ -16,7 +16,7 @@ class Card_effect(db.Model):
 class Card(db.Model):
     __tablename__ = "Cards"
     id = db.Column(db.String(50), primary_key = True)
-    name = db.Column(db.String(40), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     card_type = db.Column(db.String(20), nullable=False)
     text = db.Column(db.String(300))
     rarity = db.Column(db.String(10), nullable=False)

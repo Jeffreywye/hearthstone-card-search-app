@@ -10,7 +10,7 @@ class Queries:
         try:
             card = Card.query.get(dic['id'])
             if card:
-                return False, "{} with id {} already in Cards".format(dic['name'], dic['id'])
+                return 400, "{} with id {} already in Cards".format(dic['name'], dic['id'])
             card = Card(id = dic['id'],
                         name = dic['name'],
                         card_type = dic['type'],
@@ -32,10 +32,10 @@ class Queries:
                 for clss in dic['class']:
                     classObj = Class_.query.filter_by(name=clss).first()
                     card.classes.append(classObj)
-            return True, "Added Card with ID {} into Cards".format(dic['id']) if self.addAndCommitToDB(card) else (False, "Error Committing Card with ID {} into Cards".format(dic['id']))
+            return 201, "Added Card with ID {} into Cards".format(dic['id']) if self.addAndCommitToDB(card) else (False, "Error Committing Card with ID {} into Cards".format(dic['id']))
         
         except Exception as e:
-            return False, "Error adding card {} with id {} into Cards with Error {}".format(dic['name'], dic['id'], e)
+            return 500, "Error adding card {} with id {} into Cards with Error {}".format(dic['name'], dic['id'], e)
     
     def getAllCards(self):
         ret = []
@@ -100,7 +100,6 @@ class Queries:
             if not results:
                 return [], "No results Found"
             
-            print("filtered")
             ret = {}
             for card in results:
                 ret[card.id] = self.convertCardObjToDic(card)
@@ -134,19 +133,19 @@ class Queries:
         try:
             card = Card.query.get(id)
             if not card:
-                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+                return 404, "Card with ID: {} does NOT exist in Cards".format(id)
             self._db.session.delete(card)
             self._db.session.commit()
-            return True, "Delete Card with ID: {} from Cards".format(id)
+            return 202, "Delete Card with ID: {} from Cards".format(id)
         except Exception as e:
-            return False, "Error deleting Card with ID: {} from Cards with Error: {}".format(id, e)
+            return 500, "Error deleting Card with ID: {} from Cards with Error: {}".format(id, e)
 
 # replace card info by what's given in data
     def updateCardById(self, id, data):
         try:
             card = Card.query.get(id)
             if not card:
-                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+                return 404, "Card with ID: {} does NOT exist in Cards".format(id)
             for key in data:
                 payload = data[key]
                 
@@ -174,56 +173,56 @@ class Queries:
 
                 setattr(card,key,payload)
             self._db.session.commit()
-            return True, "Updated Card with ID: {} with {}".format(id, data)
+            return 200, "Updated Card with ID: {} with {}".format(id, data)
 
         except Exception as e:
-            return False, "Error updating Card with ID {} from Cards with Error: {}".format(id, e)
+            return 500, "Error updating Card with ID {} from Cards with Error: {}".format(id, e)
     
     def appendClassToCardById(self, id, clss):
         try:
             card = Card.query.get(id)
             if not card:
-                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+                return 404, "Card with ID: {} does NOT exist in Cards".format(id)
             clssObj = Class_.query.filter_by(name = clss).first()
             if not clssObj:
-                return False, "Class: {} does not exist".format(clss)
+                return 404, "Class: {} does not exist".format(clss)
             
             if clssObj in card.classes:
-                return False, "Card {} is already {} class".format(id, clss)
+                return 400, "Card {} is already {} class".format(id, clss)
             card.classes.append(clssObj)
             self._db.session.commit()
-            return True, "Added class {} to Card with ID: {}".format(clss, id)
+            return 200, "Added class {} to Card with ID: {}".format(clss, id)
 
         except Exception as e:
-            return False, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
+            return 500, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
 
     def removeClassFromCardById(self, id, clss):
         try:
             card = Card.query.get(id)
             if not card:
-                return False, "Card with ID: {} does NOT exist in Cards".format(id)
+                return 404, "Card with ID: {} does NOT exist in Cards".format(id)
             clssObj = Class_.query.filter_by(name = clss).first()
             if not clssObj:
-                return False, "Class: {} does not exist".format(clss)
+                return 404, "Class: {} does not exist".format(clss)
             
             if clssObj not in card.classes:
-                return False, "Card {} was never a {} class".format(id, clss)
+                return 404, "Card {} was never a {} class".format(id, clss)
             card.classes.remove(clssObj)
             self._db.session.commit()
-            return True, "Removed class {} from Card with ID: {}".format(clss, id)
+            return 202, "Removed class {} from Card with ID: {}".format(clss, id)
 
         except Exception as e:
-            return False, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
+            return 500, "Error adding class: {} to Card with ID {} with Error {}".format(clss, id, e)
 
     def addToMinorTable(self, tableClass, val):
         try:
             sql_obj = tableClass.query.filter_by(name=val).first()
             if sql_obj:
-                return False, "{} already exists in {}".format(val, tableClass.__tablename__)
+                return 400, "{} already exists in {}".format(val, tableClass.__tablename__)
             sql_obj = tableClass(name = val)
-            return True, "{} Added into {}".format(val, tableClass.__tablename__) if self.addAndCommitToDB(sql_obj) else False, "Error Committing {} into {}".format(val, tableClass.__tablename__)
+            return 201, "{} Added into {}".format(val, tableClass.__tablename__) if self.addAndCommitToDB(sql_obj) else False, "Error Committing {} into {}".format(val, tableClass.__tablename__)
         except Exception as e:
-            return False, "Error adding {} into {} with Error {}".format(val, tableClass.__tablename__, e)
+            return 500, "Error adding {} into {} with Error {}".format(val, tableClass.__tablename__, e)
 
     def addAndCommitToDB(self, sqlobj):
         try:
@@ -244,16 +243,16 @@ class Queries:
 
     def deleteFromMinorTableByID(self, tableClass, id):
         if not isinstance(id, int):
-            return False, "id {} is not int".format(id)
+            return 400, "id {} is not int".format(id)
         try:
             sql_obj = tableClass.query.get(id)
             if not sql_obj:
-                return False, "ID {} doesn't exist in {}".format(id, tableClass.__tablename__)
+                return 404, "ID {} doesn't exist in {}".format(id, tableClass.__tablename__)
             self._db.session.delete(sql_obj)
             self._db.session.commit()
-            return True, "Deleted ID {} from {}".format(id, tableClass.__tablename__)
+            return 202, "Deleted ID {} from {}".format(id, tableClass.__tablename__)
         except:
-            return False, "Error deleting id: {} from {}".format(id, tableClass.__tablename__)
+            return 500, "Error deleting id: {} from {}".format(id, tableClass.__tablename__)
         
     def deleteFromClassByID(self, id):
         return self.deleteFromMinorTableByID(Class_, id)
@@ -266,16 +265,16 @@ class Queries:
     
     def deleteFromMinorTableByVal(self, tableClass, val):
         if not isinstance(val, str):
-            return False, "{} is not string".format(val)
+            return 400, "{} is not string".format(val)
         try:
             sql_obj = tableClass.query.filter_by(name=val).first()
             if not sql_obj:
-                return False, "{} doesn't exist in {}".format(val, tableClass.__tablename__)
+                return 404, "{} doesn't exist in {}".format(val, tableClass.__tablename__)
             self._db.session.delete(sql_obj)
             self._db.session.commit()
-            return True, "Deleted {} from {}".format(val, tableClass.__tablename__)
+            return 202, "Deleted {} from {}".format(val, tableClass.__tablename__)
         except:
-            return False, "Error deleting: {} from {}".format(val, tableClass.__tablename__)
+            return 500, "Error deleting: {} from {}".format(val, tableClass.__tablename__)
 
     def deleteFromClassByVal(self, val):
         return self.deleteFromMinorTableByVal(Class_, val)
@@ -287,20 +286,23 @@ class Queries:
         return self.deleteFromMinorTableByVal(Set_, val)
 
     def getMinorTableRows(self, tableClass):
-        return [ (row.id, row.name) for row in tableClass.query.all()]
+        ret = {}
+        for row in tableClass.query.all():
+            ret[row.id] = row.name
+        return ret
     
     def updateMinorTableRowValByID(self, tableClass, val, id):
         try:
             if (isinstance(val,str) and isinstance(id, int)):
                 sqlObj = tableClass.query.get(id)
                 if not sqlObj:
-                    return False, "Row with id {} does not exist in {}".format(id, tableClass.__tablename__)
+                    return 404, "Row with id {} does not exist in {}".format(id, tableClass.__tablename__)
                 if tableClass.query.filter_by(name=val).first():
-                    return False, "{} already exists in {}".format(val, tableClass.__tablename__)
+                    return 400, "{} already exists in {}".format(val, tableClass.__tablename__)
                 sqlObj.name = val
                 self._db.session.commit()
-                return True, "Updated ID {} with {} for {} Table".format(id, val, tableClass.__tablename__)
+                return 200, "Updated ID {} with {} for {} Table".format(id, val, tableClass.__tablename__)
             else:
-                return False, "wrong input types, id must be int and update value must be string"
+                return 400, "wrong input types, id must be int and update value must be string"
         except:
-            return False, "Error updating {} row".format(tableClass.__tablename__)
+            return 500, "Error updating {} row".format(tableClass.__tablename__)
