@@ -6,6 +6,7 @@ from Data.cleanCardData import cleanData
 from config import conn
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
+from flask_migrate import Migrate
 from test import test
 
 app = Flask(__name__)
