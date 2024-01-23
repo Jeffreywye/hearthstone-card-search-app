@@ -30,7 +30,7 @@ def findCards():
     ret["cards"] = data[0]
     return jsonify(ret), 200
 
-@app.route('/Card/add', method = ["POST"])
+@app.route('/Card/add', methods = ["POST"])
 def addCard():
     json = request.get_json()
     if "card" not in json:
@@ -56,7 +56,7 @@ def updateCard():
     ret = queries_obj.updateCardById(json["id"], json["data"])
     return jsonify(ret[1]), ret[0]
 
-@app.route("Card/Class", methods=["POST"])
+@app.route("/Card/Class", methods=["POST"])
 def addClassToCard():
     json = request.get_json()
     if "id" not in json:
@@ -66,7 +66,7 @@ def addClassToCard():
     ret = queries_obj.appendClassToCardById(json["id"], json["class"])
     return jsonify(ret[1]), ret[0]
 
-@app.route("Card/Class", methods=['DELETE'])
+@app.route("/Card/Class", methods=['DELETE'])
 def removeClassFromCard():
     json = request.get_json()
     if "id" not in json:
